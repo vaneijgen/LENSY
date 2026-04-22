@@ -1,6 +1,6 @@
 {
-  "name": "LensTracker",
-  "short_name": "LensTracker",
+  "name": "LENSY",
+  "short_name": "LENSY",
   "description": "Track your contact lens wear days and replacement schedule.",
   "start_url": "/",
   "display": "standalone",

@@ -64,7 +64,7 @@ function load() { try { const r=localStorage.getItem(STORAGE_KEY); return r?JSON
 function save(d) { try { localStorage.setItem(STORAGE_KEY,JSON.stringify(d)); } catch {} }
 function streak(log) { let s=0,d=new Date(); while(log[toISO(d)]){s++;d.setDate(d.getDate()-1);} return s; }
 
-export default function App() {
+function App() {
   const [s, setS] = useState(() => ({...defState,...(load()||{}),view:"home",calMonth:{y:new Date().getFullYear(),m:new Date().getMonth()}}));
   const {eyes,dual,log,notifTime,notifOn,notifPerm,view,calMonth} = s;
 

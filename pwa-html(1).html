@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0A0A0F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LENSY" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <title>LENSY</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root {
+      height: 100%;
+      background: #0A0A0F;
+      color: #F0F0F8;
+      font-family: -apple-system, "SF Pro Display", "Inter", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior: none;
+    }
+    /* Safe area insets for iPhone notch / Dynamic Island */
+    #root {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React + ReactDOM (production builds) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- Babel standalone to transform JSX in-browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- App source — paste your full App component code here -->
+  <script type="text/babel" data-presets="react">
+
+    // ─────────────────────────────────────────────────────────────
+    // PASTE THE FULL CONTENTS OF THE LENSTRACK REACT APP HERE
+    // (everything inside the artifact, starting from the
+    //  "const C = { ... }" design tokens block)
+    // ─────────────────────────────────────────────────────────────
+
+    const { useState, useCallback, useEffect } = React;
+
+    // == PASTE APP CODE START ==
+
+    // == PASTE APP CODE END ==
+
+    // Mount
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(React.createElement(App));
+
+    // Service worker registration
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").then(reg => {
+          console.log("SW registered:", reg.scope);
+        }).catch(err => {
+          console.warn("SW registration failed:", err);
+        });
+      });
+    }
+
+    // Listen for LOG_TODAY message from service worker (notification Yes tap)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", e => {
+        if (e.data?.type === "LOG_TODAY") {
+          const key = "lt_v4";
+          try {
+            const stored = JSON.parse(localStorage.getItem(key) || "{}");
+            const today = new Date().toISOString().slice(0, 10);
+            stored.log = { ...(stored.log || {}), [today]: true };
+            localStorage.setItem(key, JSON.stringify(stored));
+            window.location.reload(); // refresh UI to reflect logged day
+          } catch {}
+        }
+      });
+    }
+
+  </script>
+</body>
+</html>

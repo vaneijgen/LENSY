@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0A0A0F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LENSY" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>LENSY</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root {
+      height: 100%;
+      background: #0A0A0F;
+      color: #F0F0F8;
+      font-family: -apple-system, "SF Pro Display", "Inter", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior: none;
+    }
+    #root {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel" data-presets="react">
+
+const { useState, useCallback } = React;
+
+const C = {
+  bg:"#0A0A0F", surface:"#13131A", card:"#1C1C26", border:"#2A2A38",
+  muted:"#3A3A50", text:"#F0F0F8", sub:"#7070A0", dim:"#40405A",
+  blue:"#5B8DEF", purple:"#8B6DEF", green:"#3EC98E", amber:"#F0A030", red:"#EF5050",
+};
+
+const TYPE_META = {
+  daily:   { label:"Daily",   maxDays:1,  accent:C.blue,   symbol:"D" },
+  weekly:  { label:"Weekly",  maxDays:7,  accent:C.purple, symbol:"W" },
+  monthly: { label:"Monthly", maxDays:30, accent:C.green,  symbol:"M" },
+};
+
+const STORAGE_KEY = "lt_v4";
+const toISO  = (d) => d.toISOString().slice(0,10);
+const today  = () => toISO(new Date());
+const fmtMonth = (y,m) => new Date(y,m,1).toLocaleDateString("en-US",{month:"long",year:"numeric"});
+const daysInMonth    = (y,m) => new Date(y,m+1,0).getDate();
+const firstDayOfMonth = (y,m) => new Date(y,m,1).getDay();
+
+const defEye = { lensType:"monthly", lensStart:today(), brand:"", power:"", bc:"", dia:"", notes:"" };
+const defState = {
+  eyes:{ left:{...defEye}, right:{...defEye} },
+  dual:false, log:{}, notifTime:"08:00", notifOn:false, notifPerm:"default",
+};
+
+function load() { try { const r=localStorage.getItem(STORAGE_KEY); return r?JSON.parse(r):null; } catch { return null; } }
+function save(d) { try { localStorage.setItem(STORAGE_KEY,JSON.stringify(d)); } catch {} }
+function streak(log) { let s=0,d=new Date(); while(log[toISO(d)]){s++;d.setDate(d.getDate()-1);} return s; }
+
+export default function App() {
+  const [s, setS] = useState(() => ({...defState,...(load()||{}),view:"home",calMonth:{y:new Date().getFullYear(),m:new Date().getMonth()}}));
+  const {eyes,dual,log,notifTime,notifOn,notifPerm,view,calMonth} = s;
+
+  const up = useCallback((patch) => setS(prev => {
+    const next = {...prev,...patch};
+    save({eyes:next.eyes,dual:next.dual,log:next.log,notifTime:next.notifTime,notifOn:next.notifOn,notifPerm:next.notifPerm});
+    return next;
+  }),[]);
+
+  const td = today();
+  const wornToday = !!log[td];
+  const leftMeta = TYPE_META[eyes.left.lensType];
+  const accent = leftMeta.accent;
+
+  const eyeStats = (side) => {
+    const meta = TYPE_META[eyes[side].lensType];
+    const worn = Object.keys(log).filter(d=>d>=eyes[side].lensStart&&log[d]).length;
+    const p = Math.min(100,Math.round((worn/meta.maxDays)*100));
+    const left = Math.max(0,meta.maxDays-worn);
+    const exp = worn>=meta.maxDays;
+    const rc = exp?C.red:p>70?C.amber:meta.accent;
+    return {meta,worn,p,left,exp,rc};
+  };
+
+  function toggleDay(d) { if(d>td) return; up({log:{...log,[d]:!log[d]}}); }
+  function resetLens(side) { up({eyes:{...eyes,[side]:{...eyes[side],lensStart:td}}}); }
+  function updateEye(side,patch) { up({eyes:{...eyes,[side]:{...eyes[side],...patch}}}); }
+
+  async function askNotif() {
+    if(!("Notification" in window)) return;
+    const p = await Notification.requestPermission();
+    up({notifPerm:p,notifOn:p==="granted"});
+  }
+  function scheduleNotif() {
+    if(Notification.permission!=="granted") return;
+    const [h,mi] = notifTime.split(":").map(Number);
+    const target = new Date(); target.setHours(h,mi,0,0);
+    if(target<=new Date()) target.setDate(target.getDate()+1);
+    setTimeout(()=>{
+      const n = new Notification("LENSY",{body:"Did you wear lenses today?",actions:[{action:"yes",title:"Yes"},{action:"no",title:"No"}],tag:"lt-daily",requireInteraction:true});
+      n.addEventListener("click",()=>up({log:{...log,[today()]:true}}));
+    }, target-new Date());
+  }
+
+  function exportICS() {
+    const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//LENSY//EN","CALSCALE:GREGORIAN"];
+    Object.entries(log).filter(([,v])=>v).forEach(([d])=>{
+      const ds=d.replace(/-/g,"");
+      lines.push("BEGIN:VEVENT",`DTSTART;VALUE=DATE:${ds}`,`DTEND;VALUE=DATE:${ds}`,`SUMMARY:Lenses worn`,`UID:lt-${ds}@lt`,"END:VEVENT");
+    });
+    lines.push("END:VCALENDAR");
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([lines.join("\r\n")],{type:"text/calendar"}));
+    a.download="lenses.ics"; a.click();
+  }
+
+  const ctx = {s,up,eyes,dual,log,td,wornToday,accent,leftMeta,eyeStats,toggleDay,resetLens,updateEye,askNotif,scheduleNotif,exportICS,calMonth,
+    prevMonth:()=>{let{y,m}=calMonth;m--;if(m<0){m=11;y--;}setS(p=>({...p,calMonth:{y,m}}));},
+    nextMonth:()=>{let{y,m}=calMonth;m++;if(m>11){m=0;y++;}setS(p=>({...p,calMonth:{y,m}}));},
+    notifTime,notifOn,notifPerm,
+  };
+
+  const NAV=[["home","Home"],["calendar","Calendar"],["lenses","My Lenses"],["settings","Settings"]];
+  const NAV_ICONS={home:HomeIcon,calendar:CalIcon,lenses:LensIcon,settings:GearIcon};
+
+  return (
+    <div style={{minHeight:"100dvh",background:C.bg,color:C.text,fontFamily:"-apple-system,'SF Pro Display','Inter',system-ui,sans-serif",display:"flex",flexDirection:"column",maxWidth:430,margin:"0 auto",userSelect:"none"}}>
+      <div style={{height:8}}/>
+      <div style={{padding:"12px 24px 0",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:32,height:32,borderRadius:10,background:`${accent}22`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <EyeIcon size={16} color={accent}/>
+          </div>
+          <span style={{fontSize:17,fontWeight:700,letterSpacing:-0.3}}>LENSY</span>
+        </div>
+        {notifOn&&<div style={{display:"flex",alignItems:"center",gap:5,background:C.card,borderRadius:20,padding:"4px 10px"}}><BellIcon size={11} color={C.green}/><span style={{fontSize:11,color:C.green,fontWeight:600}}>{notifTime}</span></div>}
+      </div>
+
+      <div style={{flex:1,overflowY:"auto",padding:"20px 16px 8px"}}>
+        {view==="home"     && <HomeView {...ctx}/>}
+        {view==="calendar" && <CalView  {...ctx}/>}
+        {view==="lenses"   && <LensesView {...ctx}/>}
+        {view==="settings" && <SettingsView {...ctx}/>}
+      </div>
+
+      <div style={{padding:"0 8px 20px",background:C.bg}}>
+        <div style={{background:C.surface,borderRadius:22,display:"flex",padding:"6px 4px",border:`1px solid ${C.border}`}}>
+          {NAV.map(([v,lb])=>{
+            const Icon=NAV_ICONS[v]; const active=view===v;
+            return(
+              <button key={v} onClick={()=>setS(p=>({...p,view:v}))} style={{flex:1,background:active?C.card:"transparent",border:"none",borderRadius:17,padding:"9px 4px 7px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,transition:"all .2s"}}>
+                <Icon size={18} color={active?accent:C.dim}/>
+                <span style={{fontSize:9.5,fontWeight:active?700:500,color:active?accent:C.dim,letterSpacing:0.1}}>{lb}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Arc({pct,color,size=180,stroke=11,children}) {
+  const gap=stroke+8, r1=(size-stroke*2)/2, r2=r1-gap;
+  const circ1=2*Math.PI*r1, dash1=circ1-(pct/100)*circ1;
+  const innerPct=Math.max(0,pct-15);
+  const circ2=2*Math.PI*r2, dash2=circ2-(innerPct/100)*circ2;
+  const cx=size/2, cy=size/2;
+  return (
+    <div style={{position:"relative",width:size,height:size,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <svg width={size} height={size} style={{position:"absolute",transform:"rotate(-90deg)"}}>
+        <circle cx={cx} cy={cy} r={r1} fill="none" stroke={`${color}18`} strokeWidth={stroke}/>
+        <circle cx={cx} cy={cy} r={r1} fill="none" stroke={color} strokeWidth={stroke} strokeDasharray={circ1} strokeDashoffset={dash1} strokeLinecap="round" style={{transition:"stroke-dashoffset .5s cubic-bezier(.4,0,.2,1)"}}/>
+        <circle cx={cx} cy={cy} r={r2} fill="none" stroke={`${color}10`} strokeWidth={stroke*0.55}/>
+        <circle cx={cx} cy={cy} r={r2} fill="none" stroke={`${color}55`} strokeWidth={stroke*0.55} strokeDasharray={circ2} strokeDashoffset={dash2} strokeLinecap="round" style={{transition:"stroke-dashoffset .6s cubic-bezier(.4,0,.2,1) .05s"}}/>
+      </svg>
+      <div style={{position:"relative",textAlign:"center"}}>{children}</div>
+    </div>
+  );
+}
+
+function Toggle({on,onChange,color=C.green}) {
+  return(
+    <button onClick={onChange} style={{width:44,height:24,borderRadius:12,border:"none",cursor:"pointer",background:on?color:C.muted,position:"relative",transition:"background .2s",flexShrink:0}}>
+      <div style={{width:18,height:18,borderRadius:"50%",background:"#fff",position:"absolute",top:3,left:on?23:3,transition:"left .2s",boxShadow:"0 1px 3px rgba(0,0,0,.4)"}}/>
+    </button>
+  );
+}
+
+function Chip({label,active,color,onClick}) {
+  return(
+    <button onClick={onClick} style={{flex:1,padding:"10px 6px",borderRadius:12,border:`1.5px solid ${active?color:C.border}`,background:active?`${color}18`:"transparent",color:active?color:C.sub,cursor:"pointer",fontWeight:active?700:500,fontSize:12,transition:"all .18s",textAlign:"center"}}>
+      {label}
+    </button>
+  );
+}
+
+function Card({children,style={}}) {
+  return <div style={{background:C.card,borderRadius:20,padding:"4px 18px",border:`1px solid ${C.border}`,...style}}>{children}</div>;
+}
+
+function Row({label,value,sub,action}) {
+  return(
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 0",borderBottom:`1px solid ${C.border}`}}>
+      <div>
+        <div style={{fontSize:14,fontWeight:500,color:C.text}}>{label}</div>
+        {sub&&<div style={{fontSize:12,color:C.sub,marginTop:2}}>{sub}</div>}
+      </div>
+      <div>{value??action}</div>
+    </div>
+  );
+}
+
+function Pill({label,color}) {
+  return <div style={{background:`${color}18`,border:`1px solid ${color}40`,borderRadius:10,padding:"7px 16px",color,fontWeight:600,fontSize:12}}>{label}</div>;
+}
+
+function HomeView({eyes,dual,log,td,wornToday,accent,leftMeta,eyeStats,toggleDay,resetLens}) {
+  const ls=eyeStats("left"), rs=eyeStats("right");
+  const recent=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));return toISO(d);});
+  return(
+    <div style={{display:"flex",flexDirection:"column",gap:14}}>
+      <div style={{background:C.card,borderRadius:24,padding:24,border:`1px solid ${C.border}`,display:"flex",flexDirection:"column",alignItems:"center",gap:18}}>
+        {!dual?(
+          <>
+            <Arc pct={ls.p} color={ls.rc} size={176} stroke={12}>
+              <div style={{fontSize:40,fontWeight:800,color:ls.rc,letterSpacing:-1}}>{ls.p}<span style={{fontSize:20}}>%</span></div>
+              <div style={{fontSize:12,color:C.sub,marginTop:2}}>{leftMeta.label} lens</div>
+            </Arc>
+            <div style={{display:"flex",gap:0,background:C.surface,borderRadius:14,overflow:"hidden",width:"100%"}}>
+              {[["Worn",ls.worn,ls.rc],["Left",ls.left,C.text],["Max",leftMeta.maxDays,C.sub]].map(([lb,val,col],i)=>(
+                <div key={lb} style={{flex:1,padding:"12px 0",textAlign:"center",borderRight:i<2?`1px solid ${C.border}`:"none"}}>
+                  <div style={{fontSize:22,fontWeight:800,color:col}}>{val}</div>
+                  <div style={{fontSize:10,color:C.dim,marginTop:1,textTransform:"uppercase",letterSpacing:.5}}>{lb}</div>
+                </div>
+              ))}
+            </div>
+            {ls.exp&&<Pill color={C.red} label="Replace lenses"/>}
+            <button onClick={()=>resetLens("left")} style={{background:"transparent",border:`1.5px solid ${C.border}`,borderRadius:12,padding:"9px 18px",color:C.sub,fontSize:13,cursor:"pointer",fontWeight:500}}>New pair</button>
+          </>
+        ):(
+          <div style={{display:"flex",gap:12,width:"100%"}}>
+            {["left","right"].map(side=>{
+              const st=eyeStats(side); const meta=TYPE_META[eyes[side].lensType];
+              return(
+                <div key={side} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:10,background:C.surface,borderRadius:18,padding:14}}>
+                  <span style={{fontSize:11,color:C.sub,fontWeight:600,textTransform:"uppercase",letterSpacing:.6}}>{side}</span>
+                  <Arc pct={st.p} color={st.rc} size={114} stroke={9}>
+                    <div style={{fontSize:24,fontWeight:800,color:st.rc}}>{st.p}<span style={{fontSize:12}}>%</span></div>
+                    <div style={{fontSize:9,color:C.sub}}>{meta.label}</div>
+                  </Arc>
+                  <div style={{display:"flex",width:"100%",justifyContent:"space-around"}}>
+                    {[["left",st.left,st.rc],["max",meta.maxDays,C.dim]].map(([lb,val,col])=>(
+                      <div key={lb} style={{textAlign:"center"}}>
+                        <div style={{fontSize:16,fontWeight:700,color:col}}>{val}</div>
+                        <div style={{fontSize:9,color:C.dim,textTransform:"uppercase",letterSpacing:.4}}>{lb}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {st.exp&&<span style={{fontSize:10,color:C.red,fontWeight:600}}>Replace</span>}
+                  <button onClick={()=>resetLens(side)} style={{width:"100%",padding:"7px",borderRadius:10,border:`1px solid ${C.border}`,background:"transparent",color:C.sub,cursor:"pointer",fontSize:11}}>New pair</button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <button onClick={()=>toggleDay(td)} style={{width:"100%",padding:"17px",borderRadius:18,border:"none",cursor:"pointer",fontWeight:700,fontSize:16,background:wornToday?C.card:accent,color:wornToday?C.sub:"#fff",border:wornToday?`1.5px solid ${C.border}`:"none",transition:"all .2s",display:"flex",alignItems:"center",justifyContent:"center",gap:9,boxShadow:wornToday?"none":`0 4px 20px ${accent}44`}}>
+        {wornToday?<><CheckIcon size={18} color={C.green}/> Logged for today</>:<><EyeIcon size={18} color="#fff"/> Wore lenses today</>}
+      </button>
+
+      <Card style={{padding:"16px 18px"}}>
+        <p style={{margin:"0 0 12px",fontSize:12,color:C.sub,fontWeight:600,textTransform:"uppercase",letterSpacing:.6}}>This week</p>
+        <div style={{display:"flex",gap:5}}>
+          {recent.map(d=>{
+            const worn=!!log[d],isT=d===td;
+            return(
+              <button key={d} onClick={()=>toggleDay(d)} style={{flex:1,background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:0}}>
+                <span style={{fontSize:9,color:isT?accent:C.dim,fontWeight:isT?700:400}}>{new Date(d+"T00:00").toLocaleDateString("en",{weekday:"narrow"})}</span>
+                <div style={{width:"100%",aspectRatio:"1",borderRadius:11,background:worn?`${accent}28`:C.surface,border:`1.5px solid ${isT?accent:worn?`${accent}50`:C.border}`,display:"flex",alignItems:"center",justifyContent:"center",transition:"all .15s"}}>
+                  {worn&&<div style={{width:7,height:7,borderRadius:"50%",background:accent}}/>}
+                </div>
+                <span style={{fontSize:9,color:isT?accent:C.dim}}>{new Date(d+"T00:00").getDate()}</span>
+              </button>
+            );
+          })}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function ExpiryNote({log,eyes,calMonth}) {
+  const {y,m}=calMonth;
+  const eye=eyes&&eyes.left;
+  if(!eye) return null;
+  const meta=TYPE_META[eye.lensType];
+  const worn=Object.keys(log).filter(d=>d>=eye.lensStart&&log[d]).length;
+  const remaining=Math.max(0,meta.maxDays-worn);
+  if(remaining===0) return null;
+  const est=new Date(); est.setDate(est.getDate()+remaining);
+  const estISO=toISO(est);
+  const mKey=`${y}-${String(m+1).padStart(2,"0")}`;
+  if(!estISO.startsWith(mKey)) return null;
+  const estLabel=new Date(estISO+"T00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+  const color=remaining<=3?C.amber:C.sub;
+  return(
+    <div style={{background:`${color}12`,border:`1px solid ${color}30`,borderRadius:14,padding:"11px 14px",display:"flex",alignItems:"center",gap:10}}>
+      <div style={{width:7,height:7,borderRadius:"50%",background:color,flexShrink:0}}/>
+      <span style={{fontSize:12,color,lineHeight:1.5}}>Estimated lens expiry: <strong>{estLabel}</strong> — based on daily wear from today.</span>
+    </div>
+  );
+}
+
+function CalView({s,log,td,accent,exportICS,calMonth,prevMonth,nextMonth,toggleDay}) {
+  const {y,m}=calMonth;
+  const days=daysInMonth(y,m), first=firstDayOfMonth(y,m);
+  const cells=[...Array(first).fill(null),...Array.from({length:days},(_,i)=>i+1)];
+  while(cells.length%7) cells.push(null);
+  const total=Object.values(log).filter(Boolean).length;
+  const mKey=`${y}-${String(m+1).padStart(2,"0")}`;
+  const monthCount=Object.entries(log).filter(([d,v])=>v&&d.startsWith(mKey)).length;
+  return(
+    <div style={{display:"flex",flexDirection:"column",gap:14}}>
+      <Card style={{padding:18}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+          <button onClick={prevMonth} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:11,width:34,height:34,color:C.sub,cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>‹</button>
+          <span style={{fontWeight:700,fontSize:15}}>{fmtMonth(y,m)}</span>
+          <button onClick={nextMonth} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:11,width:34,height:34,color:C.sub,cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>›</button>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3,marginBottom:6}}>
+          {["S","M","T","W","T","F","S"].map((d,i)=>(
+            <div key={i} style={{textAlign:"center",fontSize:10,color:C.dim,fontWeight:600,paddingBottom:4}}>{d}</div>
+          ))}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3}}>
+          {cells.map((day,i)=>{
+            if(!day) return <div key={i}/>;
+            const ds=`${y}-${String(m+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+            const worn=!!log[ds],isT=ds===td,fut=ds>td;
+            return(
+              <button key={i} onClick={()=>toggleDay(ds)} style={{aspectRatio:"1",border:`1.5px solid ${isT?accent:worn?`${accent}50`:C.border}`,borderRadius:11,background:worn?`${accent}22`:"transparent",color:worn?accent:fut?C.dim:C.sub,fontWeight:isT?800:worn?600:400,fontSize:12,cursor:fut?"default":"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,padding:0,transition:"all .12s"}}>
+                {day}
+                {worn&&<div style={{width:4,height:4,borderRadius:"50%",background:accent}}/>}
+              </button>
+            );
+          })}
+        </div>
+      </Card>
+
+      <div style={{display:"flex",gap:10}}>
+        {[["Total",total,"All-time"],["Month",monthCount,fmtMonth(y,m).split(" ")[0]],["Streak",streak(log),"day streak"]].map(([k,v,lb])=>(
+          <div key={k} style={{flex:1,background:C.card,borderRadius:16,padding:"14px 10px",textAlign:"center",border:`1px solid ${C.border}`}}>
+            <div style={{fontSize:24,fontWeight:800,color:accent}}>{v}</div>
+            <div style={{fontSize:10,color:C.sub,marginTop:2}}>{lb}</div>
+          </div>
+        ))}
+      </div>
+
+      <ExpiryNote log={log} eyes={s&&s.eyes} calMonth={calMonth}/>
+
+      <Card style={{padding:18}}>
+        <p style={{margin:"0 0 6px",fontSize:14,fontWeight:600}}>Calendar sync</p>
+        <p style={{margin:"0 0 14px",fontSize:12,color:C.sub,lineHeight:1.6}}>Export as .ics — open on iPhone for Apple Calendar or on Android for Google Calendar.</p>
+        <button onClick={exportICS} style={{width:"100%",padding:"14px",borderRadius:14,border:"none",background:accent,color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer",boxShadow:`0 4px 16px ${accent}44`}}>Export to Calendar</button>
+        <p style={{margin:"10px 0 0",fontSize:11,color:C.dim,textAlign:"center"}}>Compatible with Google, Apple & Outlook</p>
+      </Card>
+    </div>
+  );
+}
+
+function LensesView({eyes,dual,updateEye}) {
+  const [side,setSide]=useState("left");
+  const eye=eyes[side];
+  return(
+    <div style={{display:"flex",flexDirection:"column",gap:14}}>
+      {dual&&(
+        <div style={{display:"flex",background:C.card,borderRadius:16,padding:4,gap:3,border:`1px solid ${C.border}`}}>
+          {["left","right"].map(s=>(
+            <button key={s} onClick={()=>setSide(s)} style={{flex:1,padding:"10px",borderRadius:13,border:"none",cursor:"pointer",fontWeight:600,fontSize:13,background:side===s?C.surface:"transparent",color:side===s?C.text:C.sub,transition:"all .18s",boxShadow:side===s?"0 1px 4px rgba(0,0,0,.4)":"none"}}>
+              {s.charAt(0).toUpperCase()+s.slice(1)} eye
+            </button>
+          ))}
+        </div>
+      )}
+      {!dual&&(
+        <div style={{background:`${C.blue}12`,border:`1px solid ${C.blue}30`,borderRadius:14,padding:"11px 14px",fontSize:12,color:C.sub,display:"flex",alignItems:"center",gap:8}}>
+          <InfoIcon size={14} color={C.blue}/>
+          <span>Enable <strong style={{color:C.text}}>Dual Eye Mode</strong> in Settings to track each eye separately.</span>
+        </div>
+      )}
+      <Card style={{padding:18}}>
+        <p style={{margin:"0 0 12px",fontSize:13,fontWeight:600}}>Lens type</p>
+        <div style={{display:"flex",gap:8}}>
+          {Object.entries(TYPE_META).map(([key,t])=>(
+            <Chip key={key} label={t.label} active={eye.lensType===key} color={t.accent} onClick={()=>updateEye(dual?side:"left",{lensType:key,lensStart:today()})}/>
+          ))}
+        </div>
+      </Card>
+      <Card>
+        {[["brand","Brand","e.g. Acuvue Oasys"],["power","Power (SPH)","e.g. -2.50"],["bc","Base curve","e.g. 8.5"],["dia","Diameter","e.g. 14.0"],["notes","Notes","e.g. for dry eyes"]].map(([f,lb,ph],i,arr)=>(
+          <div key={f} style={{padding:"13px 0",borderBottom:i<arr.length-1?`1px solid ${C.border}`:"none"}}>
+            <div style={{fontSize:11,color:C.sub,marginBottom:5,fontWeight:500}}>{lb} <span style={{color:C.dim}}>· optional</span></div>
+            <input value={eye[f]||""} onChange={e=>updateEye(dual?side:"left",{[f]:e.target.value})} placeholder={ph} style={{width:"100%",background:"transparent",border:"none",color:C.text,fontSize:14,outline:"none",padding:0,fontFamily:"inherit"}}/>
+          </div>
+        ))}
+      </Card>
+      {(eye.brand||eye.power||eye.bc||eye.dia)&&(
+        <Card style={{padding:18}}>
+          <p style={{margin:"0 0 12px",fontSize:13,fontWeight:600}}>Summary</p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+            {[["Brand",eye.brand],["Power",eye.power],["Base curve",eye.bc],["Diameter",eye.dia]].filter(([,v])=>v).map(([k,v])=>(
+              <div key={k} style={{background:C.surface,borderRadius:12,padding:"11px 13px"}}>
+                <div style={{fontSize:10,color:C.dim,marginBottom:3,textTransform:"uppercase",letterSpacing:.4}}>{k}</div>
+                <div style={{fontSize:15,fontWeight:700}}>{v}</div>
+              </div>
+            ))}
+          </div>
+          {eye.notes&&<div style={{marginTop:10,background:C.surface,borderRadius:12,padding:"11px 13px",fontSize:13,color:C.sub,lineHeight:1.5}}>{eye.notes}</div>}
+        </Card>
+      )}
+    </div>
+  );
+}
+
+function SettingsView({s,up,log,dual,notifTime,notifOn,notifPerm,askNotif,scheduleNotif}) {
+  const [confirm,setConfirm]=useState(false);
+  const [testSent,setTestSent]=useState(false);
+  const supported="Notification" in window;
+  const total=Object.values(log).filter(Boolean).length;
+  function sendTest() {
+    if(Notification.permission!=="granted") return;
+    new Notification("LENSY",{body:"Did you wear lenses today?",actions:[{action:"yes",title:"Yes"},{action:"no",title:"No"}],tag:"lt-test",requireInteraction:true});
+    setTestSent(true); setTimeout(()=>setTestSent(false),2500);
+  }
+  return(
+    <div style={{display:"flex",flexDirection:"column",gap:14}}>
+      <Card>
+        <Row label="Dual Eye Mode" sub="Track left & right eye separately" action={<Toggle on={dual} onChange={()=>up({dual:!dual})} color={C.blue}/>}/>
+      </Card>
+      <Card>
+        <p style={{margin:"4px 0 2px",fontSize:13,fontWeight:600,paddingTop:10}}>Daily reminder</p>
+        <p style={{margin:"0 0 0",fontSize:12,color:C.sub,lineHeight:1.6,paddingBottom:13,borderBottom:`1px solid ${C.border}`}}>Tap <strong style={{color:C.text}}>Yes</strong> or <strong style={{color:C.text}}>No</strong> directly from the notification.</p>
+        {!supported&&<div style={{padding:"13px 0",fontSize:12,color:C.red}}>Notifications not supported. Install as a PWA for full support.</div>}
+        {supported&&notifPerm!=="granted"&&(
+          <div style={{padding:"13px 0"}}>
+            <button onClick={askNotif} style={{width:"100%",padding:"13px",borderRadius:13,border:"none",background:C.blue,color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer"}}>Enable notifications</button>
+          </div>
+        )}
+        {supported&&notifPerm==="granted"&&(
+          <>
+            <Row label="Enabled" action={<Toggle on={notifOn} onChange={()=>{const e=!notifOn;up({notifOn:e});if(e)scheduleNotif();}} color={C.green}/>}/>
+            {notifOn&&<Row label="Time" action={<input type="time" value={notifTime} onChange={e=>{up({notifTime:e.target.value});scheduleNotif();}} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:9,padding:"6px 10px",color:C.text,fontSize:13,outline:"none",fontFamily:"inherit"}}/>}/>}
+            <div style={{padding:"13px 0"}}>
+              <button onClick={sendTest} style={{width:"100%",padding:"12px",borderRadius:13,border:`1.5px solid ${C.border}`,background:"transparent",color:testSent?C.green:C.sub,fontWeight:600,fontSize:13,cursor:"pointer",transition:"color .2s"}}>
+                {testSent?"Test sent":"Send test notification"}
+              </button>
+            </div>
+          </>
+        )}
+      </Card>
+      <Card>
+        <Row label="Total days logged" value={<span style={{fontSize:16,fontWeight:800,color:C.blue}}>{total}</span>}/>
+        <Row label="Current streak" value={<span style={{fontSize:16,fontWeight:800,color:C.amber}}>{streak(log)} days</span>}/>
+      </Card>
+      <Card>
+        <div style={{padding:"4px 0 10px"}}>
+          {!confirm?(
+            <button onClick={()=>setConfirm(true)} style={{width:"100%",marginTop:10,padding:"12px",borderRadius:13,border:`1.5px solid ${C.red}40`,background:"transparent",color:C.red,fontWeight:600,fontSize:13,cursor:"pointer"}}>Clear all data</button>
+          ):(
+            <div style={{display:"flex",gap:8,marginTop:10}}>
+              <button onClick={()=>setConfirm(false)} style={{flex:1,padding:"12px",borderRadius:13,border:`1px solid ${C.border}`,background:"transparent",color:C.sub,fontWeight:600,cursor:"pointer"}}>Cancel</button>
+              <button onClick={()=>{try{localStorage.removeItem(STORAGE_KEY);}catch{}window.location.reload();}} style={{flex:1,padding:"12px",borderRadius:13,border:"none",background:C.red,color:"#fff",fontWeight:700,cursor:"pointer"}}>Delete</button>
+            </div>
+          )}
+        </div>
+      </Card>
+      <p style={{textAlign:"center",fontSize:11,color:C.dim,margin:"4px 0 0"}}>LENSY · Always follow your optometrist's advice</p>
+    </div>
+  );
+}
+
+const I=(path)=>({size=20,color="currentColor",style={}})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={style}>{path}</svg>
+);
+const EyeIcon   = I(<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>);
+const HomeIcon  = I(<><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></>);
+const CalIcon   = I(<><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></>);
+const LensIcon  = I(<><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></>);
+const GearIcon  = I(<><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></>);
+const BellIcon  = I(<><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></>);
+const CheckIcon = I(<polyline points="20 6 9 17 4 12"/>);
+const InfoIcon  = I(<><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>);
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(React.createElement(App));
+
+if("serviceWorker" in navigator) {
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("/sw.js").catch(()=>{});
+  });
+  navigator.serviceWorker.addEventListener("message",e=>{
+    if(e.data&&e.data.type==="LOG_TODAY"){
+      try{
+        const stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");
+        const t=new Date().toISOString().slice(0,10);
+        stored.log={...(stored.log||{}),[t]:true};
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(stored));
+        window.location.reload();
+      }catch{}
+    }
+  });
+}
+
+  </script>
+</body>
+</html>

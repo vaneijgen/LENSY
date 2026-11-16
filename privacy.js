@@ -8,7 +8,10 @@ const VERSION = { nl: 'Versie 1, 11 november 2026', en: 'Version 1, 11 November 
 
 let stored = {};
 try { stored = JSON.parse(localStorage.getItem('lensy_v1')) || {}; } catch (e) {}
-let lang = stored.lang === 'en' || stored.lang === 'nl' ? stored.lang : (/^nl/i.test(navigator.language || '') ? 'nl' : 'en');
+// The notice exists in Dutch and English. Other app languages (German, French, Spanish) read the English version.
+const prefs = [stored.lang].concat(navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']);
+let lang = 'en';
+for (const l of prefs) { const c = String(l || '').slice(0, 2).toLowerCase(); if (c === 'nl' || c === 'en') { lang = c; break; } if (['de', 'fr', 'es'].includes(c)) break; }
 if (stored.theme === 'light' || stored.theme === 'dark') document.documentElement.setAttribute('data-theme', stored.theme);
 
 // "@op" in a paragraph is replaced by the operator's details.

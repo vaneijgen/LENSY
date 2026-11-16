@@ -1,10 +1,12 @@
 :root{
   --bg:#F2F2F7; --card:#FFFFFF; --raised:#FFFFFF;
   --fill:rgba(120,120,128,.12); --fill-strong:rgba(120,120,128,.2);
-  --label:#000000; --label2:rgba(60,60,67,.68); --label3:rgba(60,60,67,.34);
+  --label:#000000; --label2:rgba(60,60,67,.76); --label3:rgba(60,60,67,.34);
   --sep:rgba(60,60,67,.16);
   --blue:#007AFF; --blue2:#32ADE6; --green:#34C759;
   --orange:#FF9500; --orange2:#FFCC00; --red:#FF3B30; --red2:#FF6482;
+  /* Text and filled-control versions of the system colours, dark enough to read (WCAG AA) */
+  --ink-blue:#0066CC; --fill-blue:#0071E3; --ink-green:#1E7A34; --ink-orange:#A65300; --ink-red:#D70015;
   --bar:rgba(255,255,255,.74); --bar-edge:rgba(255,255,255,.9);
   --shadow:0 8px 30px rgba(0,0,0,.12);
   color-scheme:light;
@@ -17,6 +19,7 @@
     --sep:rgba(84,84,88,.6);
     --blue:#0A84FF; --blue2:#64D2FF; --green:#30D158;
     --orange:#FF9F0A; --orange2:#FFD60A; --red:#FF453A; --red2:#FF6482;
+    --ink-blue:#0A84FF; --fill-blue:#0071E3; --ink-green:#30D158; --ink-orange:#FF9F0A; --ink-red:#FF453A;
     --bar:rgba(36,36,38,.72); --bar-edge:rgba(255,255,255,.12);
     --shadow:0 8px 30px rgba(0,0,0,.5);
     color-scheme:dark;
@@ -29,6 +32,7 @@
   --sep:rgba(84,84,88,.6);
   --blue:#0A84FF; --blue2:#64D2FF; --green:#30D158;
   --orange:#FF9F0A; --orange2:#FFD60A; --red:#FF453A; --red2:#FF6482;
+  --ink-blue:#0A84FF; --fill-blue:#0071E3; --ink-green:#30D158; --ink-orange:#FF9F0A; --ink-red:#FF453A;
   --bar:rgba(36,36,38,.72); --bar-edge:rgba(255,255,255,.12);
   --shadow:0 8px 30px rgba(0,0,0,.5);
   color-scheme:dark;
@@ -44,8 +48,12 @@ body{
 }
 button,input{font:inherit;color:inherit}
 button{background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation}
-a{color:var(--blue)}
+a{color:var(--ink-blue);text-underline-offset:.18em}
 :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+::selection{background:color-mix(in srgb,var(--blue) 26%,transparent)}
+input{caret-color:var(--blue);accent-color:var(--blue)}
+h1,h2,.say b,.lead{text-wrap:balance}
+.sheet p,.note,.hint,.foot{text-wrap:pretty}
 h1,h2,p,form{margin:0}
 [hidden]{display:none!important}
 .round{font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -65,25 +73,39 @@ h1,h2,p,form{margin:0}
 .group{margin-top:26px}
 .group>h2{font-size:13px;font-weight:400;color:var(--label2);padding:0 16px 7px}
 .group>.note{font-size:13px;line-height:1.38;color:var(--label2);padding:8px 16px 0}
-.group>.note.warn{color:var(--red)}
+.group>.note.warn{color:var(--ink-red)}
 .list{background:var(--card);border-radius:22px;overflow:hidden}
 .row{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   min-height:50px;padding:10px 16px;position:relative;width:100%;text-align:left;text-decoration:none;
 }
 .row+.row::before{content:"";position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep)}
-.row .k{flex:none}
+.row .k{flex:0 1 auto;min-width:0}
 .row .v{color:var(--label2);text-align:right;font-variant-numeric:tabular-nums;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.row.action{color:var(--blue)}
+.row.action{color:var(--ink-blue)}
+/* Rows sit in a clipped list, so their focus ring is drawn inside */
+.row:focus-visible,.row input:focus-visible{outline-offset:-3px}
+.row.action,.row.danger{transition:background .2s}
+.row.action:active,.row.danger:active{background:var(--fill);transition:none}
+@media (hover:hover){.row.action:hover,.row.danger:hover{background:var(--fill)}}
 .row.action .k{flex:0 1 auto}
-.row.danger{color:var(--red);justify-content:center}
+.row.danger{color:var(--ink-red);justify-content:center}
 .row input{
   flex:1;min-width:0;border:0;background:transparent;text-align:right;
-  font-size:17px;padding:4px 0;outline-offset:6px;
+  font-size:17px;padding:4px 0;
 }
-.row input::placeholder{color:var(--label3)}
+.row input::placeholder{color:var(--label2);opacity:1}
 .row input[type=date],.row input[type=time]{flex:none;background:var(--fill);border-radius:9px;padding:6px 10px;text-align:center;min-height:34px}
 .row.stack{flex-direction:column;align-items:stretch;gap:10px;padding:14px 16px}
+/* Native picker inside a row, styled like the date and time chips */
+.pick{position:relative;flex:none;display:flex;align-items:center}
+.pick select{
+  appearance:none;-webkit-appearance:none;border:0;font:inherit;font-size:17px;color:var(--label);
+  background:var(--fill);border-radius:9px;min-height:34px;padding:6px 32px 6px 12px;max-width:62vw;
+  text-overflow:ellipsis;cursor:pointer;
+}
+.pick svg{position:absolute;right:9px;width:16px;height:16px;color:var(--label2);pointer-events:none}
+.row .pick select:focus-visible{outline:3px solid var(--blue);outline-offset:-3px}
 
 /* Switch */
 .switch{flex:none;width:51px;height:31px;border-radius:16px;background:var(--fill-strong);position:relative;transition:background .22s}
@@ -110,15 +132,15 @@ h1,h2,p,form{margin:0}
 .ring.warn .track{stroke:var(--orange)} .ring.warn .s1{stop-color:var(--orange2)} .ring.warn .s2{stop-color:var(--orange)}
 .ring.over .track{stroke:var(--red)} .ring.over .s1{stop-color:var(--red2)} .ring.over .s2{stop-color:var(--red)}
 .ring-c{position:absolute;text-align:center;line-height:1}
-.ring-c strong{display:block;font-size:60px;font-weight:700;letter-spacing:-1px}
-.ring.over .ring-c strong{color:var(--red)}
+.ring-c strong{display:block;font-size:60px;font-weight:700;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.ring.over .ring-c strong{color:var(--ink-red)}
 .ring-c strong small{font-size:.44em;font-weight:600;margin-left:1px}
 .ring-c span{display:block;margin-top:6px;font-size:15px;color:var(--label2)}
 .say{text-align:center}
 .say b{display:block;font-size:22px;font-weight:600;letter-spacing:-.2px}
 .say span{display:block;margin-top:3px;font-size:15px;color:var(--label2)}
-.say.warn b{color:var(--orange)}
-.say.over b{color:var(--red)}
+.say.warn b{color:var(--ink-orange)}
+.say.over b{color:var(--ink-red)}
 .hero.duo{flex-direction:row;align-items:flex-start;gap:8px;padding:24px 12px}
 .hero.duo .eye{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
 .hero.duo h2{font-size:13px;font-weight:400;color:var(--label2)}
@@ -134,39 +156,48 @@ h1,h2,p,form{margin:0}
   transition:transform .12s,background .2s,color .2s;
 }
 .btn:active{transform:scale(.975)}
-.btn:disabled{opacity:.5}
-.btn.primary{background:var(--blue);color:#fff}
-.btn.done{background:color-mix(in srgb,var(--green) 18%,transparent);color:var(--green)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:disabled:active{transform:none}
+.btn.primary{background:var(--fill-blue);color:#fff}
+.btn.done{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--ink-green)}
+@media (hover:hover){
+  .btn:not(:disabled):hover{filter:brightness(.96)}
+  .link:hover{text-decoration:underline}
+  .tabs button:not([aria-current]):hover{color:var(--label)}
+  .cal-nav button:hover,.stepper button:not(:disabled):hover{background:var(--fill-strong)}
+  .grid button:not(:disabled):not(.is-worn):hover .dot{background:var(--fill)}
+}
 .btn.plain{background:var(--fill);color:var(--label)}
 .btn.outline{background:var(--card);color:var(--label);box-shadow:inset 0 0 0 1px var(--sep)}
-.btn.destructive{background:var(--red);color:#fff}
+.btn.destructive{background:var(--ink-red);color:#fff}
 .btn svg{width:20px;height:20px}
-.link{display:block;width:fit-content;margin:14px auto 0;padding:8px 12px;color:var(--blue);font-size:15px;text-align:center;text-decoration:none}
+.link{display:block;width:fit-content;margin:14px auto 0;padding:8px 12px;border-radius:12px;color:var(--ink-blue);font-size:15px;text-align:center;text-decoration:none}
 .hint{font-size:13px;color:var(--label2);text-align:center;margin-top:8px}
 
 /* Calendar */
 .dot{
   width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
   font-size:16px;font-variant-numeric:tabular-nums;
-  transition:background .18s,color .18s;
+  transition:background .18s,color .18s,transform .12s;
 }
 .cal{padding:16px 10px 12px}
 .cal-nav{display:flex;align-items:center;justify-content:space-between;padding:0 6px 10px}
 .cal-nav h2{font-size:20px;font-weight:600;text-transform:capitalize}
 .cal-nav div{display:flex;gap:6px}
-.cal-nav button{width:38px;height:38px;border-radius:50%;background:var(--fill);color:var(--blue);display:grid;place-items:center}
+.cal-nav button{width:44px;height:44px;border-radius:50%;background:var(--fill);color:var(--ink-blue);display:grid;place-items:center;transition:background .2s}
 .cal-nav svg{width:18px;height:18px}
 .grid{display:grid;grid-template-columns:repeat(7,1fr);row-gap:4px}
 .grid .wd{font-size:12px;color:var(--label2);text-align:center;padding-bottom:6px}
 .grid button,.grid .blank{display:grid;place-items:center;min-height:44px}
-.grid .is-worn .dot{background:var(--blue);color:#fff;font-weight:600}
-.grid .is-today:not(.is-worn) .dot{color:var(--blue);font-weight:700;box-shadow:inset 0 0 0 1.5px var(--blue)}
+.grid .is-worn .dot{background:var(--fill-blue);color:#fff;font-weight:600}
+.grid .is-today:not(.is-worn) .dot{color:var(--ink-blue);font-weight:700;box-shadow:inset 0 0 0 1.5px var(--ink-blue)}
 .grid .is-future .dot{color:var(--label3)}
-.grid .is-last .dot{box-shadow:inset 0 0 0 2px var(--orange);color:var(--orange);font-weight:600}
+.grid .is-last .dot{box-shadow:inset 0 0 0 2px var(--ink-orange);color:var(--ink-orange);font-weight:600}
+.grid button:active:not(:disabled) .dot{transform:scale(.9)}
 .grid button:disabled{cursor:default}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;padding:12px 8px 2px;font-size:13px;color:var(--label2);border-top:.5px solid var(--sep);margin-top:10px}
 .legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
-.legend .a{background:var(--blue)} .legend .b{box-shadow:inset 0 0 0 2px var(--orange)}
+.legend .a{background:var(--fill-blue)} .legend .b{box-shadow:inset 0 0 0 2px var(--ink-orange)}
 
 /* Tab bar */
 .tabs{
@@ -181,7 +212,7 @@ h1,h2,p,form{margin:0}
 }
 .tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 7px;border-radius:29px;color:var(--label2);font-size:10.5px;font-weight:600;transition:background .2s,color .2s}
 .tabs svg{width:25px;height:25px}
-.tabs button[aria-current="page"]{color:var(--blue);background:var(--fill)}
+.tabs button[aria-current="page"]{color:var(--ink-blue);background:var(--fill)}
 
 /* Welcome */
 .welcome{min-height:calc(100dvh - 160px);display:flex;flex-direction:column;justify-content:center;padding-top:24px}
@@ -201,11 +232,11 @@ h1,h2,p,form{margin:0}
   display:block;width:100%;min-height:52px;margin-top:10px;padding:0 16px;
   border:0;border-radius:14px;background:var(--fill);font-size:17px;text-align:left;
 }
-.field::placeholder{color:var(--label2)}
+.field::placeholder{color:var(--label2);opacity:1}
 .or{display:flex;align-items:center;gap:12px;margin:18px 0 8px;font-size:13px;color:var(--label2)}
 .or::before,.or::after{content:"";flex:1;height:.5px;background:var(--sep)}
 .sheet .msg{min-height:20px;margin-top:12px;font-size:14px;color:var(--label2)}
-.sheet .msg.bad{color:var(--red)}
+.sheet .msg.bad{color:var(--ink-red)}
 .sheet .links{display:flex;justify-content:space-between;gap:8px;margin-top:6px}
 .sheet .links .link{margin:0;font-size:14px}
 @keyframes fade{from{opacity:0}}
@@ -220,13 +251,15 @@ h1,h2,p,form{margin:0}
 
 /* Stock stepper and reorder line */
 .stepper{display:flex;align-items:center;gap:4px;background:var(--fill);border-radius:10px;padding:2px}
-.stepper button{width:40px;height:32px;border-radius:8px;font-size:20px;line-height:1;color:var(--label)}
+.stepper button{width:44px;height:34px;border-radius:8px;display:grid;place-items:center;color:var(--label);transition:background .15s}
+.stepper svg{width:16px;height:16px}
 .stepper button:disabled{color:var(--label3)}
 .stepper button:active:not(:disabled){background:var(--fill-strong)}
 .stepper b{min-width:34px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
-.stockline{margin-top:22px;text-align:center;font-size:15px;color:var(--orange);font-weight:600}
+.stockline{margin-top:22px;text-align:center;font-size:15px;color:var(--ink-orange);font-weight:600}
 .stockline+.stockline{margin-top:4px}
 .stockline~.link{margin-top:4px}
+.link+.link{margin-top:0}
 .sheet p a{font-size:15px}
 
 /* Privacy page */

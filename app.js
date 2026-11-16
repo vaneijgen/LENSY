@@ -25,6 +25,7 @@ const TEXT = {
     'cal.worn': 'Worn', 'cal.last': 'Last day of this pair', 'cal.until': 'Lasts until {d}', 'cal.ifdaily': ', if you wear them every day',
     'cal.due': 'Due for replacement', 'cal.month': 'This month', 'cal.all': 'All time', 'cal.streak': 'Current streak',
     'n.days': '{n} days', 'n.day': '1 day',
+    'cal.prev': 'Previous month', 'cal.next': 'Next month', 'stock.less': 'One less', 'stock.more': 'One more',
     'cal.export': 'Add wear days to calendar', 'cal.google': 'Add reminder to Google Calendar',
     'ics.worn': 'Contact lenses worn', 'ics.replace': 'Replace contact lenses',
     'lens.schedule': 'Replacement schedule', 'type.daily': 'Daily', 'type.weekly': 'Weekly', 'type.biweekly': '2-week', 'type.monthly': 'Monthly',
@@ -81,6 +82,7 @@ const TEXT = {
     'cal.worn': 'Gedragen', 'cal.last': 'Laatste dag van dit paar', 'cal.until': 'Gaat mee tot {d}', 'cal.ifdaily': ', als je ze elke dag draagt',
     'cal.due': 'Aan vervanging toe', 'cal.month': 'Deze maand', 'cal.all': 'Totaal', 'cal.streak': 'Huidige reeks',
     'n.days': '{n} dagen', 'n.day': '1 dag',
+    'cal.prev': 'Vorige maand', 'cal.next': 'Volgende maand', 'stock.less': 'Eén minder', 'stock.more': 'Eén meer',
     'cal.export': 'Draagdagen naar agenda', 'cal.google': 'Herinnering in Google Agenda',
     'ics.worn': 'Lenzen gedragen', 'ics.replace': 'Lenzen vervangen',
     'lens.schedule': 'Vervangschema', 'type.daily': 'Dag', 'type.weekly': 'Week', 'type.biweekly': '2 weken', 'type.monthly': 'Maand',
@@ -122,10 +124,190 @@ const TEXT = {
     'c.title': 'Je gegevens in je account bewaren?',
     'c.text': 'Je draagdagen en lensgegevens zijn gezondheidsgerelateerde gegevens. Met jouw toestemming bewaart LENSY ze in je account, op servers in de EU, enkel om ze op je toestellen te tonen en je herinnering te sturen. Je kan dit altijd intrekken door je account te verwijderen. Je bevestigt dat je 13 jaar of ouder bent.',
     'c.ok': 'Ik ga akkoord', 'c.no': 'Nee, log me uit'
+  },
+  de: {
+    'tab.today': 'Heute', 'tab.calendar': 'Kalender', 'tab.lenses': 'Linsen', 'tab.settings': 'Einstellungen',
+    'left': 'übrig', 'days.left': 'Noch {n} Tage', 'day.left': 'Noch 1 Tag', 'until': 'bis {d}',
+    'daily.fresh': 'Heute ein frisches Paar', 'daily.worn': 'Heute getragen', 'daily.wornSub': 'Wirf dieses Paar heute Abend weg',
+    'over': 'Zeit für ein neues Paar', 'over.eye': 'Diese Linse ersetzen', 'over.sub': 'Dieses Paar ist am Ende',
+    'lastday': 'Letzter Tag', 'lastday.sub': 'Morgen ersetzen',
+    'log': 'Ich trage heute Linsen', 'logged': 'Heute getragen', 'undo': 'Zum Rückgängigmachen erneut tippen',
+    'newpair': 'Neues Paar beginnen', 'newlens.left': 'Neue linke Linse', 'newlens.right': 'Neue rechte Linse',
+    'eye.left': 'Linkes Auge', 'eye.right': 'Rechtes Auge',
+    'new.title': 'Neues Paar beginnen?', 'new.text': 'Der Countdown beginnt ab heute neu. Dein Tragverlauf bleibt erhalten.', 'new.ok': 'Neues Paar beginnen',
+    'cancel': 'Abbrechen',
+    'cal.worn': 'Getragen', 'cal.last': 'Letzter Tag dieses Paars', 'cal.until': 'Hält bis {d}', 'cal.ifdaily': ', wenn du sie jeden Tag trägst',
+    'cal.due': 'Muss ersetzt werden', 'cal.month': 'Diesen Monat', 'cal.all': 'Insgesamt', 'cal.streak': 'Aktuelle Serie',
+    'n.days': '{n} Tage', 'n.day': '1 Tag',
+    'cal.prev': 'Vorheriger Monat', 'cal.next': 'Nächster Monat', 'stock.less': 'Eins weniger', 'stock.more': 'Eins mehr',
+    'cal.export': 'Tragetage in den Kalender', 'cal.google': 'Erinnerung in Google Kalender',
+    'ics.worn': 'Kontaktlinsen getragen', 'ics.replace': 'Kontaktlinsen ersetzen',
+    'lens.schedule': 'Austauschrhythmus', 'type.daily': 'Tag', 'type.weekly': 'Woche', 'type.biweekly': '2 Wochen', 'type.monthly': 'Monat',
+    'lens.opened': 'Geöffnet am', 'lens.details': 'Details (optional)', 'f.brand': 'Marke', 'f.power': 'Stärke', 'f.bc': 'Basiskurve', 'f.dia': 'Durchmesser', 'f.notes': 'Notizen',
+    'ph.notes': 'Für trockene Augen',
+    'set.account': 'Konto', 'set.signin': 'Anmelden oder Konto erstellen', 'set.signin.note': 'Hält deine Daten sicher und auf allen Geräten gleich.',
+    'set.nocloud': 'Konten sind noch nicht eingerichtet. Siehe setup/SETUP.md.',
+    'set.export': 'Meine Daten herunterladen', 'set.signout': 'Abmelden', 'set.delete': 'Konto löschen',
+    'set.syncerr': 'Synchronisieren fehlgeschlagen. LENSY versucht es erneut, sobald du online bist.',
+    'set.dual': 'Jedes Auge einzeln erfassen', 'set.count': 'Herunterzählen nach', 'count.worn': 'Tragetage', 'count.calendar': 'Tage seit Öffnen',
+    'set.count.note': 'Die meisten Hersteller zählen ab dem Tag, an dem du ein Paar öffnest. Frag deinen Optiker.',
+    'set.reminder': 'Tägliche Erinnerung', 'set.ask': 'Fragen, ob ich Linsen trug', 'set.time': 'Uhrzeit', 'set.test': 'Testbenachrichtigung senden', 'set.sent': 'Gesendet. Sieh in deinen Benachrichtigungen nach.',
+    'rem.cloud': 'Auf Android antwortest du direkt in der Benachrichtigung mit Ja oder Nein.',
+    'rem.local': 'Melde dich an, um die Erinnerung auch bei geschlossener App zu erhalten.',
+    'rem.ios': 'Füge LENSY auf dem iPhone zuerst zum Home-Bildschirm hinzu (Teilen, dann Zum Home-Bildschirm) und öffne die App von dort.',
+    'rem.unsupported': 'Dieser Browser kann keine Benachrichtigungen anzeigen.',
+    'rem.blocked': 'Benachrichtigungen für LENSY sind blockiert. Erlaube sie in den Website-Einstellungen deines Browsers und versuche es erneut.',
+    'rem.fail': 'Dieses Gerät konnte nicht für Erinnerungen angemeldet werden. Versuche es später erneut.',
+    'rem.testfail': 'Die Testbenachrichtigung konnte nicht gesendet werden. Prüfe, ob Benachrichtigungen für LENSY erlaubt sind.',
+    'notif.body': 'Hast du heute Linsen getragen?', 'yes': 'Ja', 'no': 'Nein',
+    'set.language': 'Sprache', 'lang.auto': 'Automatisch', 'set.look': 'Darstellung', 'look.auto': 'Automatisch', 'look.light': 'Hell', 'look.dark': 'Dunkel',
+    'set.erase': 'Alle Daten löschen', 'erase.title': 'Alle Daten löschen?', 'erase.text': 'Dein Tragverlauf, deine Linsendaten und Einstellungen werden von diesem Gerät entfernt. Das kann nicht rückgängig gemacht werden.', 'erase.ok': 'Alles löschen',
+    'out.title': 'Abmelden?', 'out.text': 'Deine Daten bleiben in deinem Konto und werden von diesem Gerät entfernt.',
+    'del.title': 'Konto löschen?', 'del.text': 'Dein Konto und alles, was darin gespeichert ist, wird endgültig gelöscht.', 'del.ok': 'Konto löschen', 'del.fail': 'Das Konto konnte nicht gelöscht werden. Versuche es später erneut.',
+    'foot': 'Halte dich bei der Tragezeit an den Rat deines Optikers.',
+    'w.lead': 'Wisse, wann es Zeit für ein neues Paar ist.', 'w.which': 'Welche Linsen trägst du?', 'w.start': 'Los geht’s', 'w.have': 'Ich habe schon ein Konto',
+    'a.in': 'Anmelden', 'a.up': 'Konto erstellen', 'a.reset': 'Passwort zurücksetzen', 'a.google': 'Weiter mit Google', 'a.apple': 'Weiter mit Apple', 'a.or': 'oder',
+    'a.email': 'E-Mail', 'a.pass': 'Passwort', 'a.newpass': 'Neues Passwort (mindestens 8 Zeichen)',
+    'a.toUp': 'Konto erstellen', 'a.toIn': 'Ich habe ein Konto', 'a.forgot': 'Passwort vergessen?', 'a.send': 'Link zum Zurücksetzen senden',
+    'a.bad': 'E-Mail oder Passwort ist falsch.', 'a.short': 'Verwende mindestens 8 Zeichen.', 'a.invalid': 'Gib eine gültige E-Mail-Adresse ein.',
+    'a.confirm': 'Bestätige deine E-Mail-Adresse über die Mail, die wir geschickt haben, und melde dich dann an.', 'a.sent': 'Falls zu dieser Adresse ein Konto gehört, ist ein Link zum Zurücksetzen unterwegs.',
+    'a.err': 'Etwas ist schiefgelaufen. Versuche es erneut.', 'a.setpass': 'Wähle ein neues Passwort', 'a.save': 'Passwort speichern', 'a.saved': 'Passwort gespeichert.',
+    'f.stock': 'Ersatzpaare zu Hause', 'f.stock.lens': 'Ersatzlinsen zu Hause', 'f.stock.daily': 'Linsentage zu Hause',
+    'stock.n': '{n} Ersatzpaare zu Hause', 'stock.1': '1 Ersatzpaar zu Hause', 'stock.0': 'Kein Ersatzpaar zu Hause',
+    'stockl.n': '{n} Ersatzlinsen zu Hause', 'stockl.1': '1 Ersatzlinse zu Hause', 'stockl.0': 'Keine Ersatzlinse zu Hause',
+    'stockd.n': 'Linsen für noch {n} Tage', 'stockd.1': 'Linsen für noch 1 Tag', 'stockd.0': 'Keine Linsen mehr zu Hause',
+    'shop.order': 'Nachbestellen', 'shop.ad': 'Werbung. LENSY erhält eventuell eine Provision. Nur deine Linsenmarke wird weitergegeben.',
+    'privacy': 'Datenschutzerklärung', 'set.privacy': 'Datenschutz und Rechtliches', 'foot.med': 'LENSY ist kein Medizinprodukt und gibt keinen medizinischen Rat.',
+    'c.title': 'Deine Daten in deinem Konto speichern?',
+    'c.text': 'Deine Tragetage und Linsendaten sind gesundheitsbezogene Daten. Mit deiner Erlaubnis speichert LENSY sie in deinem Konto, auf Servern in der EU, nur um sie auf deinen Geräten anzuzeigen und dir deine Erinnerung zu senden. Du kannst das jederzeit widerrufen, indem du dein Konto löschst. Du bestätigst, dass du mindestens 13 Jahre alt bist.',
+    'c.ok': 'Ich stimme zu', 'c.no': 'Nein, abmelden'
+  },
+  fr: {
+    'tab.today': 'Aujourd’hui', 'tab.calendar': 'Calendrier', 'tab.lenses': 'Lentilles', 'tab.settings': 'Réglages',
+    'left': 'restant', 'days.left': 'Encore {n} jours', 'day.left': 'Encore 1 jour', 'until': 'jusqu’au {d}',
+    'daily.fresh': 'Une paire neuve aujourd’hui', 'daily.worn': 'Portées aujourd’hui', 'daily.wornSub': 'Jette cette paire ce soir',
+    'over': 'Il est temps de changer de paire', 'over.eye': 'Remplace cette lentille', 'over.sub': 'Cette paire a atteint sa limite',
+    'lastday': 'Dernier jour', 'lastday.sub': 'À remplacer demain',
+    'log': 'Je porte mes lentilles aujourd’hui', 'logged': 'Portées aujourd’hui', 'undo': 'Touche à nouveau pour annuler',
+    'newpair': 'Commencer une nouvelle paire', 'newlens.left': 'Nouvelle lentille gauche', 'newlens.right': 'Nouvelle lentille droite',
+    'eye.left': 'Œil gauche', 'eye.right': 'Œil droit',
+    'new.title': 'Commencer une nouvelle paire ?', 'new.text': 'Le décompte repart d’aujourd’hui. Ton historique est conservé.', 'new.ok': 'Commencer une nouvelle paire',
+    'cancel': 'Annuler',
+    'cal.worn': 'Portées', 'cal.last': 'Dernier jour de cette paire', 'cal.until': 'Tient jusqu’au {d}', 'cal.ifdaily': ', si tu les portes tous les jours',
+    'cal.due': 'À remplacer', 'cal.month': 'Ce mois-ci', 'cal.all': 'Au total', 'cal.streak': 'Série en cours',
+    'n.days': '{n} jours', 'n.day': '1 jour',
+    'cal.prev': 'Mois précédent', 'cal.next': 'Mois suivant', 'stock.less': 'Un de moins', 'stock.more': 'Un de plus',
+    'cal.export': 'Ajouter les jours portés à l’agenda', 'cal.google': 'Rappel dans Google Agenda',
+    'ics.worn': 'Lentilles portées', 'ics.replace': 'Remplacer les lentilles',
+    'lens.schedule': 'Rythme de remplacement', 'type.daily': 'Jour', 'type.weekly': 'Semaine', 'type.biweekly': '2 semaines', 'type.monthly': 'Mois',
+    'lens.opened': 'Ouverte le', 'lens.details': 'Détails (facultatif)', 'f.brand': 'Marque', 'f.power': 'Puissance', 'f.bc': 'Rayon de courbure', 'f.dia': 'Diamètre', 'f.notes': 'Notes',
+    'ph.notes': 'Pour les yeux secs',
+    'set.account': 'Compte', 'set.signin': 'Se connecter ou créer un compte', 'set.signin.note': 'Garde tes données en sécurité et identiques sur tous tes appareils.',
+    'set.nocloud': 'Les comptes ne sont pas encore configurés. Voir setup/SETUP.md.',
+    'set.export': 'Télécharger mes données', 'set.signout': 'Se déconnecter', 'set.delete': 'Supprimer le compte',
+    'set.syncerr': 'La synchronisation a échoué. LENSY réessaie dès que tu es en ligne.',
+    'set.dual': 'Suivre chaque œil séparément', 'set.count': 'Décompter selon', 'count.worn': 'Jours portés', 'count.calendar': 'Jours depuis l’ouverture',
+    'set.count.note': 'La plupart des fabricants comptent à partir du jour où tu ouvres une paire. Demande à ton opticien.',
+    'set.reminder': 'Rappel quotidien', 'set.ask': 'Me demander si j’ai porté mes lentilles', 'set.time': 'Heure', 'set.test': 'Envoyer une notification test', 'set.sent': 'Envoyée. Regarde tes notifications.',
+    'rem.cloud': 'Sur Android, réponds Oui ou Non directement dans la notification.',
+    'rem.local': 'Connecte-toi pour recevoir le rappel même quand l’app est fermée.',
+    'rem.ios': 'Sur iPhone, ajoute d’abord LENSY à l’écran d’accueil (Partager, puis Sur l’écran d’accueil) et ouvre l’app depuis là.',
+    'rem.unsupported': 'Ce navigateur ne peut pas afficher de notifications.',
+    'rem.blocked': 'Les notifications sont bloquées pour LENSY. Autorise-les dans les réglages du site de ton navigateur, puis réessaie.',
+    'rem.fail': 'Impossible d’inscrire cet appareil aux rappels. Réessaie plus tard.',
+    'rem.testfail': 'La notification test n’a pas pu être envoyée. Vérifie que les notifications sont autorisées pour LENSY.',
+    'notif.body': 'As-tu porté tes lentilles aujourd’hui ?', 'yes': 'Oui', 'no': 'Non',
+    'set.language': 'Langue', 'lang.auto': 'Automatique', 'set.look': 'Apparence', 'look.auto': 'Automatique', 'look.light': 'Clair', 'look.dark': 'Sombre',
+    'set.erase': 'Effacer toutes les données', 'erase.title': 'Effacer toutes les données ?', 'erase.text': 'Ton historique, les détails de tes lentilles et tes réglages seront supprimés de cet appareil. C’est irréversible.', 'erase.ok': 'Tout effacer',
+    'out.title': 'Se déconnecter ?', 'out.text': 'Tes données restent dans ton compte et sont supprimées de cet appareil.',
+    'del.title': 'Supprimer ton compte ?', 'del.text': 'Ton compte et tout ce qu’il contient sont supprimés définitivement.', 'del.ok': 'Supprimer le compte', 'del.fail': 'Le compte n’a pas pu être supprimé. Réessaie plus tard.',
+    'foot': 'Suis les conseils de ton opticien sur la durée de port.',
+    'w.lead': 'Sache quand il est temps de changer de paire.', 'w.which': 'Quelles lentilles portes-tu ?', 'w.start': 'Commencer', 'w.have': 'J’ai déjà un compte',
+    'a.in': 'Se connecter', 'a.up': 'Créer un compte', 'a.reset': 'Réinitialiser le mot de passe', 'a.google': 'Continuer avec Google', 'a.apple': 'Continuer avec Apple', 'a.or': 'ou',
+    'a.email': 'E-mail', 'a.pass': 'Mot de passe', 'a.newpass': 'Nouveau mot de passe (8 caractères ou plus)',
+    'a.toUp': 'Créer un compte', 'a.toIn': 'J’ai un compte', 'a.forgot': 'Mot de passe oublié ?', 'a.send': 'Envoyer le lien',
+    'a.bad': 'E-mail ou mot de passe incorrect.', 'a.short': 'Utilise au moins 8 caractères.', 'a.invalid': 'Saisis une adresse e-mail valide.',
+    'a.confirm': 'Confirme ton adresse e-mail via le mail que nous t’avons envoyé, puis connecte-toi.', 'a.sent': 'Si un compte existe pour cette adresse, un lien de réinitialisation est en route.',
+    'a.err': 'Une erreur s’est produite. Réessaie.', 'a.setpass': 'Choisis un nouveau mot de passe', 'a.save': 'Enregistrer le mot de passe', 'a.saved': 'Mot de passe enregistré.',
+    'f.stock': 'Paires de réserve à la maison', 'f.stock.lens': 'Lentilles de réserve à la maison', 'f.stock.daily': 'Jours de lentilles à la maison',
+    'stock.n': '{n} paires de réserve à la maison', 'stock.1': '1 paire de réserve à la maison', 'stock.0': 'Aucune paire de réserve à la maison',
+    'stockl.n': '{n} lentilles de réserve à la maison', 'stockl.1': '1 lentille de réserve à la maison', 'stockl.0': 'Aucune lentille de réserve à la maison',
+    'stockd.n': 'Des lentilles pour encore {n} jours', 'stockd.1': 'Des lentilles pour encore 1 jour', 'stockd.0': 'Plus de lentilles à la maison',
+    'shop.order': 'Commander à nouveau', 'shop.ad': 'Publicité. LENSY peut toucher une commission. Seule la marque de tes lentilles est transmise.',
+    'privacy': 'Politique de confidentialité', 'set.privacy': 'Confidentialité et mentions légales', 'foot.med': 'LENSY n’est pas un dispositif médical et ne donne aucun avis médical.',
+    'c.title': 'Conserver tes données dans ton compte ?',
+    'c.text': 'Tes jours de port et les détails de tes lentilles sont des données liées à la santé. Avec ton accord, LENSY les conserve dans ton compte, sur des serveurs situés dans l’UE, uniquement pour les afficher sur tes appareils et t’envoyer ton rappel. Tu peux retirer ton accord à tout moment en supprimant ton compte. Tu confirmes avoir 13 ans ou plus.',
+    'c.ok': 'J’accepte', 'c.no': 'Non, me déconnecter'
+  },
+  es: {
+    'tab.today': 'Hoy', 'tab.calendar': 'Calendario', 'tab.lenses': 'Lentillas', 'tab.settings': 'Ajustes',
+    'left': 'restante', 'days.left': 'Quedan {n} días', 'day.left': 'Queda 1 día', 'until': 'hasta el {d}',
+    'daily.fresh': 'Un par nuevo hoy', 'daily.worn': 'Usadas hoy', 'daily.wornSub': 'Tira este par esta noche',
+    'over': 'Toca un par nuevo', 'over.eye': 'Cambia esta lentilla', 'over.sub': 'Este par ha llegado a su límite',
+    'lastday': 'Último día', 'lastday.sub': 'Cámbialas mañana',
+    'log': 'Hoy llevo lentillas', 'logged': 'Usadas hoy', 'undo': 'Toca otra vez para deshacer',
+    'newpair': 'Empezar un par nuevo', 'newlens.left': 'Nueva lentilla izquierda', 'newlens.right': 'Nueva lentilla derecha',
+    'eye.left': 'Ojo izquierdo', 'eye.right': 'Ojo derecho',
+    'new.title': '¿Empezar un par nuevo?', 'new.text': 'La cuenta atrás vuelve a empezar hoy. Tu historial se conserva.', 'new.ok': 'Empezar un par nuevo',
+    'cancel': 'Cancelar',
+    'cal.worn': 'Usadas', 'cal.last': 'Último día de este par', 'cal.until': 'Duran hasta el {d}', 'cal.ifdaily': ', si las llevas todos los días',
+    'cal.due': 'Toca cambiarlas', 'cal.month': 'Este mes', 'cal.all': 'En total', 'cal.streak': 'Racha actual',
+    'n.days': '{n} días', 'n.day': '1 día',
+    'cal.prev': 'Mes anterior', 'cal.next': 'Mes siguiente', 'stock.less': 'Uno menos', 'stock.more': 'Uno más',
+    'cal.export': 'Añadir días de uso al calendario', 'cal.google': 'Recordatorio en Google Calendar',
+    'ics.worn': 'Lentillas usadas', 'ics.replace': 'Cambiar lentillas',
+    'lens.schedule': 'Frecuencia de cambio', 'type.daily': 'Día', 'type.weekly': 'Semana', 'type.biweekly': '2 semanas', 'type.monthly': 'Mes',
+    'lens.opened': 'Abiertas el', 'lens.details': 'Detalles (opcional)', 'f.brand': 'Marca', 'f.power': 'Graduación', 'f.bc': 'Curva base', 'f.dia': 'Diámetro', 'f.notes': 'Notas',
+    'ph.notes': 'Para ojo seco',
+    'set.account': 'Cuenta', 'set.signin': 'Iniciar sesión o crear cuenta', 'set.signin.note': 'Mantiene tus datos seguros e iguales en todos tus dispositivos.',
+    'set.nocloud': 'Las cuentas aún no están configuradas. Consulta setup/SETUP.md.',
+    'set.export': 'Descargar mis datos', 'set.signout': 'Cerrar sesión', 'set.delete': 'Eliminar cuenta',
+    'set.syncerr': 'No se pudo sincronizar. LENSY lo vuelve a intentar cuando tengas conexión.',
+    'set.dual': 'Seguir cada ojo por separado', 'set.count': 'Contar por', 'count.worn': 'Días de uso', 'count.calendar': 'Días desde que se abrieron',
+    'set.count.note': 'La mayoría de los fabricantes cuentan desde el día en que abres un par. Pregunta a tu óptico.',
+    'set.reminder': 'Recordatorio diario', 'set.ask': 'Preguntar si llevé lentillas', 'set.time': 'Hora', 'set.test': 'Enviar notificación de prueba', 'set.sent': 'Enviada. Mira tus notificaciones.',
+    'rem.cloud': 'En Android puedes responder Sí o No desde la propia notificación.',
+    'rem.local': 'Inicia sesión para recibir el recordatorio aunque la app esté cerrada.',
+    'rem.ios': 'En iPhone, primero añade LENSY a la pantalla de inicio (Compartir y luego Añadir a pantalla de inicio) y ábrela desde ahí.',
+    'rem.unsupported': 'Este navegador no puede mostrar notificaciones.',
+    'rem.blocked': 'Las notificaciones de LENSY están bloqueadas. Permítelas en los ajustes del sitio de tu navegador y vuelve a intentarlo.',
+    'rem.fail': 'No se pudo registrar este dispositivo para los recordatorios. Inténtalo más tarde.',
+    'rem.testfail': 'No se pudo enviar la notificación de prueba. Comprueba que las notificaciones de LENSY están permitidas.',
+    'notif.body': '¿Has llevado lentillas hoy?', 'yes': 'Sí', 'no': 'No',
+    'set.language': 'Idioma', 'lang.auto': 'Automático', 'set.look': 'Aspecto', 'look.auto': 'Automático', 'look.light': 'Claro', 'look.dark': 'Oscuro',
+    'set.erase': 'Borrar todos los datos', 'erase.title': '¿Borrar todos los datos?', 'erase.text': 'Se eliminarán de este dispositivo tu historial, los datos de tus lentillas y tus ajustes. No se puede deshacer.', 'erase.ok': 'Borrarlo todo',
+    'out.title': '¿Cerrar sesión?', 'out.text': 'Tus datos se quedan en tu cuenta y se eliminan de este dispositivo.',
+    'del.title': '¿Eliminar tu cuenta?', 'del.text': 'Tu cuenta y todo lo que contiene se eliminan para siempre.', 'del.ok': 'Eliminar cuenta', 'del.fail': 'No se pudo eliminar la cuenta. Inténtalo más tarde.',
+    'foot': 'Sigue los consejos de tu óptico sobre el tiempo de uso.',
+    'w.lead': 'Sabe cuándo toca un par nuevo.', 'w.which': '¿Qué lentillas llevas?', 'w.start': 'Empezar', 'w.have': 'Ya tengo una cuenta',
+    'a.in': 'Iniciar sesión', 'a.up': 'Crear cuenta', 'a.reset': 'Restablecer contraseña', 'a.google': 'Continuar con Google', 'a.apple': 'Continuar con Apple', 'a.or': 'o',
+    'a.email': 'Correo electrónico', 'a.pass': 'Contraseña', 'a.newpass': 'Nueva contraseña (8 caracteres o más)',
+    'a.toUp': 'Crear una cuenta', 'a.toIn': 'Tengo una cuenta', 'a.forgot': '¿Has olvidado la contraseña?', 'a.send': 'Enviar enlace',
+    'a.bad': 'Correo o contraseña incorrectos.', 'a.short': 'Usa al menos 8 caracteres.', 'a.invalid': 'Introduce un correo electrónico válido.',
+    'a.confirm': 'Confirma tu correo con el mensaje que te hemos enviado y luego inicia sesión.', 'a.sent': 'Si esa dirección tiene una cuenta, te hemos enviado un enlace para restablecerla.',
+    'a.err': 'Algo ha fallado. Inténtalo de nuevo.', 'a.setpass': 'Elige una nueva contraseña', 'a.save': 'Guardar contraseña', 'a.saved': 'Contraseña guardada.',
+    'f.stock': 'Pares de repuesto en casa', 'f.stock.lens': 'Lentillas de repuesto en casa', 'f.stock.daily': 'Días de lentillas en casa',
+    'stock.n': '{n} pares de repuesto en casa', 'stock.1': '1 par de repuesto en casa', 'stock.0': 'Ningún par de repuesto en casa',
+    'stockl.n': '{n} lentillas de repuesto en casa', 'stockl.1': '1 lentilla de repuesto en casa', 'stockl.0': 'Ninguna lentilla de repuesto en casa',
+    'stockd.n': 'Lentillas para {n} días más', 'stockd.1': 'Lentillas para 1 día más', 'stockd.0': 'No quedan lentillas en casa',
+    'shop.order': 'Volver a pedir', 'shop.ad': 'Publicidad. LENSY puede recibir una comisión. Solo se comparte la marca de tus lentillas.',
+    'privacy': 'Aviso de privacidad', 'set.privacy': 'Privacidad y aviso legal', 'foot.med': 'LENSY no es un producto sanitario y no da consejo médico.',
+    'c.title': '¿Guardar tus datos en tu cuenta?',
+    'c.text': 'Tus días de uso y los datos de tus lentillas son datos relacionados con la salud. Con tu permiso, LENSY los guarda en tu cuenta, en servidores de la UE, solo para mostrarlos en tus dispositivos y enviarte tu recordatorio. Puedes retirar este permiso en cualquier momento eliminando tu cuenta. Confirmas que tienes 13 años o más.',
+    'c.ok': 'Acepto', 'c.no': 'No, cerrar sesión'
   }
 };
-function lang() { return S.lang === 'en' || S.lang === 'nl' ? S.lang : (/^nl/i.test(navigator.language || '') ? 'nl' : 'en'); }
-function locale() { return lang() === 'nl' ? 'nl-BE' : 'en-GB'; }
+const LANGS = ['nl', 'en', 'de', 'fr', 'es'];
+const LANG_NAME = { nl: 'Nederlands', en: 'English', de: 'Deutsch', fr: 'Français', es: 'Español' };
+const LOCALE = { nl: 'nl-BE', en: 'en-GB', de: 'de-DE', fr: 'fr-BE', es: 'es-ES' };
+// The first of the device's preferred languages that LENSY speaks; English otherwise.
+function systemLang() {
+  const list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+  for (const l of list) { const c = String(l).slice(0, 2).toLowerCase(); if (LANGS.includes(c)) return c; }
+  return 'en';
+}
+function lang() { return LANGS.includes(S.lang) ? S.lang : systemLang(); }
+function locale() { return LOCALE[lang()]; }
 function t(k, v) {
   let s = TEXT[lang()][k]; if (s == null) s = TEXT.en[k] || k;
   return v ? s.replace(/\{(\w+)\}/g, (_, n) => v[n]) : s;
@@ -166,7 +348,7 @@ function applySettings(raw, d) {
   d.count = raw.count === 'calendar' ? 'calendar' : 'worn';
   d.notif = { on: !!(raw.notif && raw.notif.on), time: raw.notif && /^([01]\d|2[0-3]):[0-5]\d$/.test(raw.notif.time || '') ? raw.notif.time : '20:00' };
   d.theme = raw.theme === 'light' || raw.theme === 'dark' ? raw.theme : 'auto';
-  d.lang = raw.lang === 'en' || raw.lang === 'nl' ? raw.lang : 'auto';
+  d.lang = LANGS.includes(raw.lang) ? raw.lang : 'auto';
   return d;
 }
 function settingsBlob() { return { eyes: S.eyes, dual: S.dual, count: S.count, notif: S.notif, theme: S.theme, lang: S.lang, onboarded: S.onboarded }; }
@@ -266,6 +448,8 @@ const seg = (act, opts, cur, extra) => `<div class="seg ${extra || ''}" role="gr
 const sw = (act, on, label) => `<button class="switch" role="switch" aria-checked="${on}" aria-label="${esc(label)}" data-act="${act}"></button>`;
 const head = (title, sub) => `<header class="head">${sub ? `<p class="date">${sub}</p>` : ''}<h1>${title}</h1></header>`;
 const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const MINUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>';
+const PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>';
 const typeSeg = cur => seg('type', Object.keys(TYPES).map(k => [k, t('type.' + k)]), cur);
 const openedRow = e => e.type === 'daily' ? '' : `<label class="row"><span class="k">${t('lens.opened')}</span><input type="date" data-field="start" value="${e.start}" max="${today()}"></label>`;
 
@@ -324,8 +508,8 @@ function vCalendar() {
   });
   let h = head(t('tab.calendar'));
   h += `<section class="card cal"><div class="cal-nav"><h2>${new Intl.DateTimeFormat(locale(), { month: 'long', year: 'numeric' }).format(first)}</h2><div>`
-    + '<button data-act="month" data-val="-1" aria-label="&lt;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>'
-    + '<button data-act="month" data-val="1" aria-label="&gt;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button>'
+    + `<button data-act="month" data-val="-1" aria-label="${t('cal.prev')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>`
+    + `<button data-act="month" data-val="1" aria-label="${t('cal.next')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button>`
     + '</div></div><div class="grid">';
   for (let i = 0; i < 7; i++) h += `<span class="wd" aria-hidden="true">${new Intl.DateTimeFormat(locale(), { weekday: 'narrow' }).format(new Date(2024, 0, 1 + i))}</span>`;
   for (let b = 0; b < offset; b++) h += '<span class="blank"></span>';
@@ -353,7 +537,7 @@ function vLenses() {
   if (S.dual) h += seg('side', [['left', t('eye.left')], ['right', t('eye.right')]], side, 'top');
   h += `<section class="group"><h2>${t('lens.schedule')}</h2><div class="list"><div class="row stack">${typeSeg(e.type)}</div>${openedRow(e)}`
     + `<div class="row"><span class="k">${t(e.type === 'daily' ? 'f.stock.daily' : S.dual ? 'f.stock.lens' : 'f.stock')}</span><span class="stepper">`
-    + `<button data-act="stock" data-val="-1" aria-label="\u2212"${e.stock == null ? ' disabled' : ''}>\u2212</button><b class="round" aria-live="polite">${e.stock == null ? '\u2013' : e.stock}</b><button data-act="stock" data-val="1" aria-label="+">+</button></span></div></div></section>`;
+    + `<button data-act="stock" data-val="-1" aria-label="${t('stock.less')}"${e.stock == null ? ' disabled' : ''}>${MINUS}</button><b class="round" aria-live="polite">${e.stock == null ? '\u2013' : e.stock}</b><button data-act="stock" data-val="1" aria-label="${t('stock.more')}">${PLUS}</button></span></div></div></section>`;
   h += `<section class="group"><h2>${t('lens.details')}</h2><div class="list">`;
   [['brand', 'Acuvue Oasys', 'text'], ['power', '−2.50', 'text'], ['bc', '8.5', 'decimal'], ['dia', '14.0', 'decimal'], ['notes', t('ph.notes'), 'text']].forEach(f => {
     h += `<label class="row"><span class="k">${t('f.' + f[0])}</span><input type="text" inputmode="${f[2]}" autocomplete="off" data-field="${f[0]}" value="${esc(e[f[0]])}" placeholder="${esc(f[1])}" maxlength="120"></label>`;
@@ -383,7 +567,10 @@ function vSettings() {
     + `<button class="row action" data-act="test"><span class="k">${ui.sent ? t('set.sent') : t('set.test')}</span></button>`;
   h += `</div><p class="note${ui.msg ? ' warn' : ''}">${ui.msg ? t(ui.msg) : t(sb && user ? 'rem.cloud' : sb ? 'rem.local' : 'rem.cloud')}</p></section>`;
 
-  h += `<section class="group"><h2>${t('set.language')}</h2><div class="list"><div class="row stack">${seg('lang', [['auto', t('lang.auto')], ['nl', 'Nederlands'], ['en', 'English']], S.lang)}</div></div></section>`;
+  const langOpts = [['auto', t('lang.auto') + ' (' + LANG_NAME[systemLang()] + ')']].concat(LANGS.map(l => [l, LANG_NAME[l]]));
+  h += `<section class="group"><div class="list"><label class="row"><span class="k">${t('set.language')}</span><span class="pick"><select data-setting="lang">`
+    + langOpts.map(o => `<option value="${o[0]}"${o[0] === S.lang ? ' selected' : ''}${o[0] === 'auto' ? '' : ` lang="${o[0]}"`}>${esc(o[1])}</option>`).join('')
+    + `</select><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 10l4-4 4 4M8 14l4 4 4-4"/></svg></span></label></div></section>`;
   h += `<section class="group"><h2>${t('set.look')}</h2><div class="list"><div class="row stack">${seg('theme', [['auto', t('look.auto')], ['light', t('look.light')], ['dark', t('look.dark')]], S.theme)}</div></div></section>`;
   h += `<section class="group"><div class="list">${user ? `<button class="row danger" data-act="delete">${t('set.delete')}</button>` : `<button class="row danger" data-act="clear">${t('set.erase')}</button>`}</div></section>`;
   h += `<section class="group"><div class="list"><a class="row action" href="privacy.html"><span class="k">${t('set.privacy')}</span></a></div></section>`;
@@ -769,7 +956,6 @@ document.addEventListener('click', ev => {
     case 'dual': S.dual = !S.dual; ui.side = 'left'; touch(); render(); return;
     case 'count': S.count = val === 'calendar' ? 'calendar' : 'worn'; touch(); render(); return;
     case 'theme': S.theme = val; applySettings(settingsBlob()); applyTheme(); touch(); render(); return;
-    case 'lang': S.lang = val; applySettings(settingsBlob()); touch(); render(); return;
     case 'notif': setReminder(!S.notif.on); return;
     case 'test': notify().then(ok => { ui.sent = ok; ui.msg = ok ? '' : 'rem.testfail'; render(); }); return;
     case 'ics': shareOrDownload(new File([buildICS()], 'lensy.ics', { type: 'text/calendar' })); return;
@@ -800,6 +986,7 @@ document.addEventListener('change', ev => {
     }
     render();
   }
+  if (el.dataset.setting === 'lang') { S.lang = LANGS.includes(el.value) ? el.value : 'auto'; touch(); render(); return; }
   if (el.dataset.setting === 'time' && /^([01]\d|2[0-3]):[0-5]\d$/.test(el.value)) {
     S.notif.time = el.value; try { localStorage.removeItem(KEY + '_asked'); } catch (e) {}
     touch();
@@ -815,6 +1002,8 @@ document.addEventListener('visibilitychange', () => {
   } else reminderTick();
 });
 window.addEventListener('online', () => sync());
+// On Automatic, follow the device when its language changes. pushSettings stores the language the reminder is sent in.
+window.addEventListener('languagechange', () => { if (S.lang === 'auto') { persist(); softRender(); if (sb && user) touch(); } });
 setInterval(() => {
   reminderTick();
   if (shownDay !== today() && document.visibilityState === 'visible') { shownDay = today(); softRender(); }

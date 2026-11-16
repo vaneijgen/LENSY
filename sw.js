@@ -1,5 +1,5 @@
 /* LENSY service worker: offline support, reminders and the Yes/No buttons. */
-const VERSION = 'lensy-v4';
+const VERSION = 'lensy-v6';
 const STATE = 'lensy-state';
 const SHELL = ['./', './index.html', './styles.css', './app.js', './config.js', './supabase.js', './privacy.html', './privacy.js', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 const STATE_URL = new URL('./__lensy_state', self.location.href).href;
